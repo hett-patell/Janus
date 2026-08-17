@@ -23,7 +23,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -31,7 +31,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -824,6 +824,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Supported inventory providers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#codex-chatgpt-oauth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Codex / ChatGPT OAuth
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1417,6 +1434,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Supported inventory providers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#codex-chatgpt-oauth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Codex / ChatGPT OAuth
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1599,25 +1633,43 @@ provide a custom base URL. Keys are auto-detected when provider is omitted.</p>
 key-management tool.</p>
 <h2 id="supported-inventory-providers">Supported inventory providers<a class="headerlink" href="#supported-inventory-providers" title="Permanent link">&para;</a></h2>
 <p>Janus recognizes keys for these providers (auto-detection probes each):</p>
-<p>OpenAI, Anthropic, OpenRouter, Google AI (Gemini), Groq, Together, Perplexity,
+<p>OpenAI, Anthropic, OpenRouter, Google AI (Gemini), Ollama Cloud, Groq, Together, Perplexity,
 Cohere, Mistral, DeepSeek, xAI, Hugging Face, Replicate, Fireworks, NVIDIA,
 Moonshot, DashScope (Qwen), MiniMax, SiliconFlow, StepFun, Zhipu, Xiaomi, Tavily,
-Firecrawl, fal.ai, Exa, Brave Search, plus <strong>custom</strong> and <strong>unidentified</strong>
-fallbacks.</p>
+Firecrawl, fal.ai, Exa, Brave Search, <strong>Codex (ChatGPT)</strong> (OAuth blobs — select
+explicitly), plus <strong>custom</strong> and <strong>unidentified</strong> fallbacks.</p>
+<h3 id="codex-chatgpt-oauth">Codex / ChatGPT OAuth<a class="headerlink" href="#codex-chatgpt-oauth" title="Permanent link">&para;</a></h3>
+<p>Paste one of the following into <strong>Add keys</strong>, then choose provider <strong>Codex (ChatGPT)</strong>:</p>
+<ul>
+<li>A Janus credential JSON blob (<code>access_token</code> / <code>refresh_token</code> / optional
+  <code>extra.workspaceId</code>)</li>
+<li>A 9router Codex <code>providerConnections</code> row (camelCase tokens +
+  <code>providerSpecificData.chatgptAccountId</code>)</li>
+<li>A JSON array of those rows, or a wrapper with a <code>providerConnections</code> array
+  (non-Codex connections are skipped)</li>
+<li>A bare access token (short-lived; prefer blobs that include a refresh token)</li>
+</ul>
+<p>Full 9router backup import (settings, combos, other providers) is not supported
+here — only connection objects. Pasting a Codex blob on the <strong>Providers</strong> page
+still works for a single gateway account.</p>
 <h2 id="encryption-at-rest">Encryption at rest<a class="headerlink" href="#encryption-at-rest" title="Permanent link">&para;</a></h2>
-<p>Set <code>INVENTORY_ENCRYPTION_KEY</code> to a Fernet key before adding keys. Keys are then
-stored encrypted in SQLite.</p>
+<p>Set <code>INVENTORY_ENCRYPTION_KEY</code> to a Fernet key before adding credentials. Inventory
+upstream keys and gateway provider API keys/OAuth credential blobs are then stored
+encrypted in SQLite. Keep this key with your backups: an encrypted database cannot
+be used without the same Fernet key.</p>
 <p>Generate a key:</p>
 <div class="highlight"><pre><span></span><code>janus<span class="w"> </span>inventory<span class="w"> </span>generate-encryption-key
 <span class="c1"># gAAAAABl...  (save this — shown once)</span>
 </code></pre></div>
 <div class="highlight"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">INVENTORY_ENCRYPTION_KEY</span><span class="o">=</span><span class="s1">&#39;gAAAAABl...&#39;</span>
 </code></pre></div>
-<p>Encrypt existing plaintext keys:</p>
+<p>Encrypt existing plaintext upstream keys and provider credentials in one pass:</p>
 <div class="highlight"><pre><span></span><code>janus<span class="w"> </span>inventory<span class="w"> </span>encrypt-keys
 </code></pre></div>
-<p>The dashboard shows encryption status on the inventory overview and offers an
-<strong>Encrypt keys</strong> action when <code>INVENTORY_ENCRYPTION_KEY</code> is set.</p>
+<p>The dashboard shows separate encryption counts on the inventory overview and offers
+one <strong>Encrypt credentials</strong> action when <code>INVENTORY_ENCRYPTION_KEY</code> is set. Dashboard
+configuration export remains a portable plaintext YAML export; protect exported files
+accordingly. For encrypted backups, copy the SQLite database and retain the Fernet key.</p>
 <h2 id="push-api">Push API<a class="headerlink" href="#push-api" title="Permanent link">&para;</a></h2>
 <p>Programmatically ingest keys from scripts or other nodes:</p>
 <div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:20128/dashboard/api/inventory/push<span class="w"> </span><span class="se">\</span>
@@ -1769,7 +1821,7 @@ janus<span class="w"> </span>inventory<span class="w"> </span>migrate<span class
       <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "search.suggest", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>

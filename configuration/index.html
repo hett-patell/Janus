@@ -23,7 +23,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -31,7 +31,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -1382,7 +1382,14 @@ will not re-apply providers, combos, savers, or pricing.</p>
 <li><strong>Reset to Defaults</strong> (Settings page) — wipe DB tables and re-seed from YAML</li>
 </ul>
 <p>Static <code>api_keys</code> in YAML are <strong>not</strong> seeded — they remain in the config file and
-are checked at auth time alongside DB-managed keys.</p>
+are checked at auth time alongside DB-managed keys. YAML static keys always have
+full access (dashboard login + all models). Scopes (<code>can_login</code>, <code>allowed_models</code>)
+apply only to DB-managed <code>sk-janus-*</code> keys — see <a href="../api-reference/">API Reference</a>
+and the Keys dashboard page.</p>
+<p>Gateway rate limiting is optional and disabled by default. When enabled, each DB key,
+static YAML key, or client IP (when authentication is disabled) gets an independent
+60-second sliding-window bucket. Counters are in memory, process-local, and reset on
+restart. <code>/v1/health</code>, <code>/api/version</code>, and dashboard routes are exempt.</p>
 <p>Runtime settings stored in the <code>settings</code> table:</p>
 <table>
 <thead>
@@ -1395,6 +1402,10 @@ are checked at auth time alongside DB-managed keys.</p>
 <tr>
 <td><code>server_require_api_key</code></td>
 <td><code>true</code> / <code>false</code> — overrides YAML default</td>
+</tr>
+<tr>
+<td><code>server_gateway_rate_limit_rpm</code></td>
+<td>Per-client gateway requests per minute; <code>0</code> disables limiting</td>
 </tr>
 <tr>
 <td><code>saver_rtk_enabled</code></td>
@@ -1822,7 +1833,7 @@ a key <code>claude-sonnet-4</code> if the full name isn't present.</p>
       <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "search.suggest", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>
