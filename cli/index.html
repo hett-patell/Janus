@@ -1001,6 +1001,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#janus-keys-update" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        janus keys update
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#janus-keys-list" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1216,6 +1227,17 @@
     <span class="md-ellipsis">
       
         janus inventory migrate
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus-bench-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        janus bench run
       
     </span>
   </a>
@@ -1488,6 +1510,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#janus-keys-update" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        janus keys update
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#janus-keys-list" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1709,6 +1742,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#janus-bench-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        janus bench run
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1826,12 +1870,89 @@ ID: 1  Name: default
 <td>Name for this key</td>
 </tr>
 <tr>
+<td><code>--no-login</code></td>
+<td>off</td>
+<td>Disallow dashboard login</td>
+</tr>
+<tr>
+<td><code>--models</code> / <code>-m</code></td>
+<td>all</td>
+<td>Comma-separated allowed model IDs or <code>prefix/*</code> patterns</td>
+</tr>
+<tr>
+<td><code>--daily-budget</code></td>
+<td>none</td>
+<td>Daily spending limit in USD</td>
+</tr>
+<tr>
+<td><code>--absolute-budget</code></td>
+<td>none</td>
+<td>Lifetime spending limit in USD; never resets</td>
+</tr>
+<tr>
 <td><code>--config</code> / <code>-c</code></td>
 <td><code>~/.janus/config.yaml</code></td>
 <td>Path to config file</td>
 </tr>
 </tbody>
 </table>
+<div class="highlight"><pre><span></span><code>janus<span class="w"> </span>keys<span class="w"> </span>create<span class="w"> </span>--name<span class="w"> </span><span class="s2">"trial-key"</span><span class="w"> </span>--absolute-budget<span class="w"> </span><span class="m">25</span>
+janus<span class="w"> </span>keys<span class="w"> </span>create<span class="w"> </span>--name<span class="w"> </span><span class="s2">"limited-app"</span><span class="w"> </span>--daily-budget<span class="w"> </span><span class="m">5</span><span class="w"> </span>--absolute-budget<span class="w"> </span><span class="m">25</span>
+</code></pre></div>
+<h3 id="janus-keys-update"><code>janus keys update</code><a class="headerlink" href="#janus-keys-update" title="Permanent link">&para;</a></h3>
+<p>Update a key by numeric ID. Omitted budget options leave the existing limits unchanged.</p>
+<div class="highlight"><pre><span></span><code>janus<span class="w"> </span>keys<span class="w"> </span>update<span class="w"> </span><span class="m">3</span><span class="w"> </span>--absolute-budget<span class="w"> </span><span class="m">50</span>
+janus<span class="w"> </span>keys<span class="w"> </span>update<span class="w"> </span><span class="m">3</span><span class="w"> </span>--daily-budget<span class="w"> </span><span class="m">5</span><span class="w"> </span>--absolute-budget<span class="w"> </span><span class="m">25</span>
+janus<span class="w"> </span>keys<span class="w"> </span>update<span class="w"> </span><span class="m">3</span><span class="w"> </span>--clear-absolute-budget
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--name</code> / <code>-n</code></td>
+<td>Rename the key</td>
+</tr>
+<tr>
+<td><code>--login</code> / <code>--no-login</code></td>
+<td>Allow or disallow dashboard login</td>
+</tr>
+<tr>
+<td><code>--models</code> / <code>-m</code></td>
+<td>Set allowed model IDs or <code>prefix/*</code> patterns</td>
+</tr>
+<tr>
+<td><code>--clear-models</code></td>
+<td>Remove the model allowlist</td>
+</tr>
+<tr>
+<td><code>--daily-budget</code></td>
+<td>Set a positive daily limit in USD</td>
+</tr>
+<tr>
+<td><code>--absolute-budget</code></td>
+<td>Set a positive lifetime limit in USD</td>
+</tr>
+<tr>
+<td><code>--clear-daily-budget</code></td>
+<td>Remove only the daily limit</td>
+</tr>
+<tr>
+<td><code>--clear-absolute-budget</code></td>
+<td>Remove only the lifetime limit</td>
+</tr>
+<tr>
+<td><code>--config</code> / <code>-c</code></td>
+<td>Path to config file</td>
+</tr>
+</tbody>
+</table>
+<p>Absolute limits include the key's existing recorded spending; editing the limit
+does not reset the total. See <a href="../budgets/">Budgets</a> for accounting and enforcement details.</p>
 <h3 id="janus-keys-list"><code>janus keys list</code><a class="headerlink" href="#janus-keys-list" title="Permanent link">&para;</a></h3>
 <p>List all API keys.</p>
 <div class="highlight"><pre><span></span><code>janus<span class="w"> </span>keys<span class="w"> </span>list
@@ -1991,8 +2112,11 @@ Key                                  Requests         Cost
 <p>List all active budgets.</p>
 <div class="highlight"><pre><span></span><code>janus<span class="w"> </span>budgets<span class="w"> </span>list
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>    1  Global            $10.00   spent:     $8.20      82%  warning
-    2  Key #3             $5.00   spent:     $1.10      22%  ok
+<div class="highlight"><pre><span></span><code>    1  Global           warning
+       Daily: $10.00  spent today: $8.20  82%
+    2  Key #3           ok
+       Daily: $5.00  spent today: $1.10  22%
+       Absolute: $25.00  spent total: $8.00  32%  (never resets)
 </code></pre></div>
 <table>
 <thead>
@@ -2011,14 +2135,20 @@ Key                                  Requests         Cost
 </tbody>
 </table>
 <h3 id="janus-budgets-set"><code>janus budgets set</code><a class="headerlink" href="#janus-budgets-set" title="Permanent link">&para;</a></h3>
-<p>Create or update a budget. If a budget already exists for the given scope, it is
-updated in place.</p>
+<p>Create or update a budget. Existing limits are preserved unless explicitly changed
+or cleared. Daily limits can be global or per-key; absolute limits require a specific key.</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># Global budget: $10/day</span>
 janus<span class="w"> </span>budgets<span class="w"> </span><span class="nb">set</span><span class="w"> </span>--daily<span class="w"> </span><span class="m">10</span>.00<span class="w"> </span>--key<span class="w"> </span>global
 <span class="c1"># Budget 1 set: global daily limit = $10.00, warn at 80%</span>
 
 <span class="c1"># Per-key budget for key named "dev-key": $5/day, warn at 70%</span>
 janus<span class="w"> </span>budgets<span class="w"> </span><span class="nb">set</span><span class="w"> </span>--daily<span class="w"> </span><span class="m">5</span>.00<span class="w"> </span>--key<span class="w"> </span><span class="s2">"dev-key"</span><span class="w"> </span>--warn<span class="w"> </span><span class="m">70</span>
+
+<span class="c1"># Lifetime cap; retains any existing daily limit</span>
+janus<span class="w"> </span>budgets<span class="w"> </span><span class="nb">set</span><span class="w"> </span>--absolute<span class="w"> </span><span class="m">25</span>.00<span class="w"> </span>--key<span class="w"> </span><span class="s2">"dev-key"</span>
+
+<span class="c1"># Remove only the lifetime cap</span>
+janus<span class="w"> </span>budgets<span class="w"> </span><span class="nb">set</span><span class="w"> </span>--clear-absolute<span class="w"> </span>--key<span class="w"> </span><span class="s2">"dev-key"</span>
 </code></pre></div>
 <table>
 <thead>
@@ -2031,8 +2161,23 @@ janus<span class="w"> </span>budgets<span class="w"> </span><span class="nb">set
 <tbody>
 <tr>
 <td><code>--daily</code> / <code>-d</code></td>
-<td><em>(required)</em></td>
-<td>Daily limit in USD (float)</td>
+<td>unchanged</td>
+<td>Daily limit in USD</td>
+</tr>
+<tr>
+<td><code>--absolute</code></td>
+<td>unchanged</td>
+<td>Lifetime limit in USD; never resets</td>
+</tr>
+<tr>
+<td><code>--clear-daily</code></td>
+<td>off</td>
+<td>Remove the daily limit</td>
+</tr>
+<tr>
+<td><code>--clear-absolute</code></td>
+<td>off</td>
+<td>Remove the lifetime limit</td>
 </tr>
 <tr>
 <td><code>--key</code> / <code>-k</code></td>
@@ -2041,8 +2186,8 @@ janus<span class="w"> </span>budgets<span class="w"> </span><span class="nb">set
 </tr>
 <tr>
 <td><code>--warn</code> / <code>-w</code></td>
-<td><code>80</code></td>
-<td>Warn threshold percentage</td>
+<td>existing or <code>80</code></td>
+<td>Warn threshold percentage (1–100)</td>
 </tr>
 <tr>
 <td><code>--config</code> / <code>-c</code></td>
@@ -2257,6 +2402,86 @@ janus<span class="w"> </span>inventory<span class="w"> </span>migrate<span class
 <td><code>--config</code> / <code>-c</code></td>
 <td><code>~/.janus/config.yaml</code></td>
 <td>Path to config file</td>
+</tr>
+</tbody>
+</table>
+<h3 id="janus-bench-run"><code>janus bench run</code><a class="headerlink" href="#janus-bench-run" title="Permanent link">&para;</a></h3>
+<p>Benchmark every routable model through a running gateway. The command is a
+normal API client: it streams a fixed deterministic prompt set (temperature 0)
+at each model listed by <code>GET /v1/models</code>, measures status, time-to-first-token,
+and tokens/sec client-side, and estimates cost from the local pricing registry.
+Because requests go through the gateway, the server's attempt signals and usage
+rows record themselves as a side effect — benchmarking also densifies the data
+<code>model="auto"</code> ranks on.</p>
+<p>A plan (models, request count, token cap) is printed before anything runs;
+real upstream requests are made and real money may be spent.</p>
+<div class="highlight"><pre><span></span><code>janus<span class="w"> </span>bench<span class="w"> </span>run<span class="w"> </span>--base-url<span class="w"> </span>http://127.0.0.1:20128<span class="w"> </span>--api-key<span class="w"> </span><span class="s2">"</span><span class="nv">$JANUS_API_KEY</span><span class="s2">"</span>
+janus<span class="w"> </span>bench<span class="w"> </span>run<span class="w"> </span>--prefix<span class="w"> </span>anthropic/<span class="w"> </span>--prompts<span class="w"> </span><span class="m">3</span><span class="w"> </span>--output<span class="w"> </span>bench.md
+janus<span class="w"> </span>bench<span class="w"> </span>run<span class="w"> </span>--models<span class="w"> </span>deepseek/deepseek-chat,openai/gpt-4o-mini<span class="w"> </span>--yes
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--base-url</code></td>
+<td><code>http://127.0.0.1:20128</code></td>
+<td>Gateway base URL</td>
+</tr>
+<tr>
+<td><code>--api-key</code> (env <code>JANUS_API_KEY</code>)</td>
+<td>required</td>
+<td>API key with model access</td>
+</tr>
+<tr>
+<td><code>--models</code></td>
+<td>all routable</td>
+<td>Comma-separated model ids</td>
+</tr>
+<tr>
+<td><code>--prefix</code></td>
+<td>off</td>
+<td>Only models starting with this prefix</td>
+</tr>
+<tr>
+<td><code>--limit</code></td>
+<td>off</td>
+<td>Benchmark at most this many models</td>
+</tr>
+<tr>
+<td><code>--prompts</code></td>
+<td><code>1</code></td>
+<td>Fixed prompts per model (1–3)</td>
+</tr>
+<tr>
+<td><code>--max-tokens</code></td>
+<td><code>64</code></td>
+<td>Output token cap per request</td>
+</tr>
+<tr>
+<td><code>--timeout</code></td>
+<td><code>60</code></td>
+<td>Per-request timeout (seconds)</td>
+</tr>
+<tr>
+<td><code>--output</code> / <code>-o</code></td>
+<td>stdout</td>
+<td>Write the Markdown report here</td>
+</tr>
+<tr>
+<td><code>--yes</code></td>
+<td>off</td>
+<td>Skip the confirmation prompt</td>
+</tr>
+<tr>
+<td><code>--config</code> / <code>-c</code></td>
+<td><code>~/.janus/config.yaml</code></td>
+<td>Local config for cost estimates</td>
 </tr>
 </tbody>
 </table>

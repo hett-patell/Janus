@@ -1431,8 +1431,11 @@ directory on each start (no manual <code>chown</code> needed).</p>
 <p>Or, without sudo, using a throwaway root container:</p>
 <div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>-u<span class="w"> </span><span class="m">0</span><span class="w"> </span>-v<span class="w"> </span><span class="s2">"</span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span><span class="s2">/janus-data:/data"</span><span class="w"> </span>alpine<span class="w"> </span>sh<span class="w"> </span>-c<span class="w"> </span><span class="s1">'chown -R 1000:1000 /data'</span>
 </code></pre></div>
-<p>Environment variables from your host <code>.env</code> file are passed through for
-<code>${ENV_VAR}</code> resolution in config:</p>
+<p>The compose file passes an explicit list of variables from your host <code>.env</code> into the
+container: the provider API keys, the OAuth client ids/secrets, and
+<code>INVENTORY_ENCRYPTION_KEY</code>, <code>INVENTORY_ENCRYPTION_PREVIOUS_KEY</code>, <code>INVENTORY_PUSH_TOKEN</code>
+and <code>JANUS_ALLOW_INSECURE_DEV_KEY</code>. A variable that is only in <code>.env</code> but not listed under
+<code>environment:</code> never reaches Janus — add it there (or in a <code>docker-compose.override.yml</code>):</p>
 <div class="highlight"><pre><span></span><code>OPENAI_API_KEY=sk-...
 ANTHROPIC_API_KEY=sk-ant-...
 GEMINI_API_KEY=...
@@ -1440,7 +1443,11 @@ INVENTORY_ENCRYPTION_KEY=...  # encrypts inventory and gateway provider credenti
 INVENTORY_PUSH_TOKEN=...
 </code></pre></div>
 <p>Retain <code>INVENTORY_ENCRYPTION_KEY</code> with your backup material. Janus fails clearly if
-an encrypted credential is present but the matching key is unavailable. Dashboard
+an encrypted credential is present but the matching key is unavailable; when rotating
+the key, set <code>INVENTORY_ENCRYPTION_PREVIOUS_KEY</code> to the old key and restart so stored
+credentials are re-sealed automatically (see the inventory docs). If no encryption key
+is configured while real credentials exist, startup refuses to continue unless
+<code>JANUS_ALLOW_INSECURE_DEV_KEY=1</code> opts into plaintext storage. Dashboard
 configuration export is plaintext by design; a raw database backup remains encrypted.</p>
 <h3 id="build-from-source">Build from source<a class="headerlink" href="#build-from-source" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/amanverasia/Janus.git
@@ -1463,8 +1470,10 @@ API keys and use TLS termination (reverse proxy) for anything beyond a trusted L
 <p>Every client, including <code>127.0.0.1</code> and <code>localhost</code>, is redirected to
 <code>/dashboard/login</code> until it authenticates with a valid Janus API key. DB-managed
 keys must be active and have <strong>Allow dashboard login</strong> (<code>can_login=true</code>);
-configured static keys are also accepted. Username/password login and the
-loopback bypass are not supported. Legacy dashboard credential settings are
+configured static keys are also accepted. The session cookie is scoped to
+<code>/dashboard</code> and marked <code>Secure</code> when the request arrives over HTTPS, so a
+TLS-terminating reverse proxy should forward <code>X-Forwarded-Proto</code>. Username/password
+login and the loopback bypass are not supported. Legacy dashboard credential settings are
 purged during database initialization. See
 <a href="../dashboard/#authentication">Dashboard — Authentication</a>.</p>
 <p>The <code>require_api_key</code> setting controls API endpoint authentication only. It does
@@ -1476,6 +1485,7 @@ not make the dashboard anonymous when disabled.</p>
 <span class="w">    </span><span class="kn">proxy_http_version</span><span class="w"> </span><span class="mi">1</span><span class="s">.1</span><span class="p">;</span>
 <span class="w">    </span><span class="kn">proxy_set_header</span><span class="w"> </span><span class="s">Host</span><span class="w"> </span><span class="nv">$host</span><span class="p">;</span>
 <span class="w">    </span><span class="kn">proxy_set_header</span><span class="w"> </span><span class="s">X-Real-IP</span><span class="w"> </span><span class="nv">$remote_addr</span><span class="p">;</span>
+<span class="w">    </span><span class="kn">proxy_set_header</span><span class="w"> </span><span class="s">X-Forwarded-For</span><span class="w"> </span><span class="nv">$remote_addr</span><span class="p">;</span>
 <span class="w">    </span><span class="kn">proxy_buffering</span><span class="w"> </span><span class="no">off</span><span class="p">;</span><span class="w">   </span><span class="c1"># important for SSE streaming</span>
 <span class="p">}</span>
 </code></pre></div>
@@ -1492,6 +1502,14 @@ inventory keys, and cooldown state.</p>
 <span class="c1"># {"status": "ok"}</span>
 </code></pre></div>
 <p>The root URL <code>/</code> redirects to the Cloudline dashboard at <code>/dashboard/ui</code>.</p>
+<p>Inventory submissions, previews, push requests, and bulk actions accept bodies up to 4 MiB;
+backup imports accept up to 16 MiB including multipart overhead. Larger requests return 413,
+including requests without Content-Length. All credential checks share the
+<code>CHECK_CONCURRENCY</code> limit (default 8), including scheduled and bulk checks.</p>
+<p>Inventory submission rate limits use the resolved client address. Behind a reverse proxy,
+forward <code>X-Forwarded-For</code> and configure Uvicorn's <code>FORWARDED_ALLOW_IPS</code> to trust only your
+proxy addresses (loopback is trusted by default). Untrusted forwarded headers do not change
+the rate-limit bucket.</p>
 
 
 
