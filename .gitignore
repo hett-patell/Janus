@@ -97,5 +97,7 @@ site/
 
 # Janus runtime data
 janus-data/
+# OpenTunnel runtime data (contains tunnel identity + private key)
+opentunnel-data/
 nohup.out
 .release_log.txt

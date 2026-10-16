@@ -47,10 +47,13 @@ def _is_same_origin(request: Request) -> bool:
         request_parts = urlsplit(str(request.base_url))
     except ValueError:
         return False
-    return (
-        origin_parts.scheme == request_parts.scheme
-        and origin_parts.netloc.lower() == request_parts.netloc.lower()
-    )
+    # Compare only the host portion. When Janus sits behind a TLS-terminating
+    # proxy or tunnel (OpenTunnel, nginx, a cloud LB, ...), the browser uses
+    # https:// but the backend sees http:// unless the proxy adds
+    # X-Forwarded-Proto (OpenTunnel deliberately does not rewrite headers).
+    # The scheme is therefore not a reliable same-origin signal here; the host
+    # is the CSRF boundary, so only the host is compared.
+    return origin_parts.netloc.lower() == request_parts.netloc.lower()
 
 
 class DashboardMutationRoute(APIRoute):
